@@ -1,27 +1,30 @@
-const Terminal = require('../src/terminal');
+const Terminal = require('../');
 
-const terminal = new Terminal({
-  get(arg, app) {
-    if (arg.type === 'get') {
-      return arg.getter(app);
-    }
+const tasks = {
+  say(message) {
+    console.log(message);
   }
-});
+};
 
+const terminal = new Terminal(tasks);
+
+// Create Communication between task and client with events
 const task = Terminal.createCommunication(terminal);
 
-task.on('end', (e) => {
-  console.log(e);
+function start(e) {
+  console.log('started: ' + e.which);
+}
+
+task.on('start', start);
+
+task.once('end', (e) => {
+  console.log(e.which);
 });
 
-terminal.assignArguments({
-  'apt-install': {
-    type: 'get',
-    getter: function (app) {
-      console.log('getting app: ' + app);
-      return 'app';
-    }
-  }
-});
+// Events: start & end will fire
+terminal.exec('say hello', { hello: 'Hello World' });
 
-terminal.exec('get apt-install app', { app: 'g++' });
+task.off('start', start);
+
+// Nothing will showed in console, events detached...
+terminal.exec('say age', { age: 22 });
