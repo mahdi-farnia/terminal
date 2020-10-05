@@ -1,13 +1,12 @@
 const { isPlainObject } = require('is-plain-object');
 const Communication = require('./communication');
+const AnyArg = require('./AnyArg');
 
 const defaults = {
   multipleCommandSplitter: ' && '
 };
 
-const regExp = {
-  whiteSpaces: /\s+/g
-};
+const whiteSpaces = /\s+/g;
 
 class Terminal {
   /**
@@ -138,7 +137,7 @@ class Terminal {
       // solve: get apt-install g++ &&
       if (!cmd) continue;
 
-      const cmdArr = cmd.replace(regExp.whiteSpaces, ' ').trim().split(' ');
+      const cmdArr = cmd.replace(whiteSpaces, ' ').trim().split(' ');
 
       // Gen Info
       const info = {
@@ -156,6 +155,11 @@ class Terminal {
         // Get arguments value
         const argsArr = Array.isArray(info.arguments)
           ? info.arguments.map((arg) => {
+              // Check for any arg
+              if (AnyArg.isThis(taskObject.handler)) {
+                return arg;
+              }
+
               // Argument not found
               if (!reservedArgs.hasOwnProperty(arg)) {
                 throw new Error(`Argument ${arg} was not specified`);
@@ -184,6 +188,11 @@ class Terminal {
 
   execSync() {}
 }
+
+// Use Any Argument without define it
+Terminal.useAnyArg = Terminal.prototype.useAnyArg = function (task) {
+  return new AnyArg(task);
+};
 
 /**
  * Communication Initer
