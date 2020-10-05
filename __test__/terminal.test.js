@@ -17,14 +17,14 @@ function start(e) {
 
 task.on('start', start);
 
-task.once('end', (e) => {
-  console.log(e.which);
+task.on('end', (e) => {
+  console.log('ended: ' + e.which);
 });
 
 // Events: start & end will fire
 terminal.exec('say hello', { hello: 'Hello World' });
 
-task.off('start', start);
+task.off();
 
 // Nothing will showed in console, events detached...
 terminal.exec('say age', { age: 22 });
