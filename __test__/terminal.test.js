@@ -1,35 +1,30 @@
-const Terminal = require('../');
+const Terminal = require('../'),
+  rl = require('readline');
 
-function say(message) {
-  console.log(message);
-}
+const _interface = rl.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
 
-Terminal.useAnyArg(say);
-
-const tasks = { say };
+const tasks = Terminal.useAnyArg({
+  say(...msg) {
+    console.log.apply(void 0, msg);
+  },
+  name(name) {
+    console.log('my name is ' + name);
+  }
+});
 
 const terminal = new Terminal(tasks);
 
-// Create Communication between task and client with events
 const task = Terminal.createCommunication(terminal);
 
-function start(e) {
-  console.log('\nTask Started: ' + e.which + '\n');
-}
-
-task.on('start', start);
-
-task.on('end', (e) => {
+task.on('end', ({ success, which }) => {
   console.log(
-    '\nTask Ended: ' + e.which + '\n' + 'With Status Of: ' + e.success
+    `\n Task: ${which} was ${success ? 'successful' : 'not successful'}\n`
   );
 });
 
-// Events: start & end will fire
-terminal.exec('say hello');
-
-task.off();
-
-// Nothing will showed in console, events detached...
-// Any Arg Accepted If argument value not provided -->
-terminal.exec('say age', { age: 22 });
+_interface.question('Enter Command:\n', (an) => {
+  terminal.exec(an);
+});
