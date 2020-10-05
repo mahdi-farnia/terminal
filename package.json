@@ -1,0 +1,20 @@
+{
+  "name": "terminal",
+  "version": "0.0.1-beta",
+  "description": "simple string base function runner",
+  "main": "index.js",
+  "scripts": {
+    "test": "node __test__/terminal.test.js"
+  },
+  "keywords": [
+    "terminal"
+  ],
+  "author": "Mahdi Farnia",
+  "license": "MIT",
+  "dependencies": {
+    "is-plain-object": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^14.11.2"
+  }
+}
