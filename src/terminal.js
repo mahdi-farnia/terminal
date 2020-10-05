@@ -155,13 +155,12 @@ class Terminal {
         // Get arguments value
         const argsArr = Array.isArray(info.arguments)
           ? info.arguments.map((arg) => {
-              // Check for any arg
-              if (AnyArg.isThis(taskObject.handler)) {
-                return arg;
-              }
-
               // Argument not found
               if (!reservedArgs.hasOwnProperty(arg)) {
+                // Check for any arg
+                if (AnyArg.isThis(taskObject.handler)) {
+                  return arg;
+                }
                 throw new Error(`Argument ${arg} was not specified`);
               }
 
