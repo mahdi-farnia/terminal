@@ -36,14 +36,16 @@ class Communication {
 
   /**
    * Listener For Tasks Status
-   * @param { 'start' | 'end' | 'error' } event
-   * @param { (eventData: { which: string, result: any, success?: boolean, arguments: { name: string, value: any }[], message?: string } ) => void } listener
+   * @param { 'start' | 'end' | 'error' } [event]
+   * @param { (eventData: { which: string, result: any, success?: boolean, arguments: { name: string, value: any }[], message?: string } ) => void } [listener]
    */
   on(event, listener) {
-    event += '';
-    if (Array.isArray(this.eventListeners[event])) {
-      if (typeof listener === 'function') {
-        this.eventListeners[event].push(listener);
+    if (event) {
+      event += '';
+      if (Array.isArray(this.eventListeners[event])) {
+        if (typeof listener === 'function') {
+          this.eventListeners[event].push(listener);
+        }
       }
     }
     return this;
@@ -58,14 +60,27 @@ class Communication {
   }
 
   off(event, listener) {
-    event += '';
+    if (event) {
+      event += '';
 
-    if (typeof listener !== 'function') return this;
+      // Delete all listener of this type
+      if (typeof listener !== 'function') {
+        this.eventListeners[event].length = 0;
+        return this;
+      }
 
-    const i = this.eventListeners[event].indexOf(listener);
+      const i = this.eventListeners[event].indexOf(listener);
 
-    // Delete listener
-    this.eventListeners[event].splice(i, 1);
+      // Delete listener
+      this.eventListeners[event].splice(i, 1);
+    }
+    // delete all
+    else {
+      for (const event in this.eventListeners) {
+        // Empty
+        this.eventListeners[event].length = 0;
+      }
+    }
 
     return this;
   }
