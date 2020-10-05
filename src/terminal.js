@@ -10,13 +10,10 @@ const whiteSpaces = /\s+/g;
 
 class Terminal {
   /**
-   * @param { { [taskName: string]: Function } } commandsObject
+   * @param { Function | Function[] | { [taskName: string]: Function } } taskParam
    * @param {{ multipleCommandSplitter: string }} [options]
    */
-  constructor(commandsObject, options) {
-    // Should be plain object
-    if (!isPlainObject(commandsObject)) return this;
-
+  constructor(taskParam, options) {
     /**
      * Commands goes here
      * @private {{ name: string, handler: Function, argumentsLength: number }}
@@ -30,19 +27,52 @@ class Terminal {
     this._assignedArguments = {};
 
     // Extract
-    for (const functionName in commandsObject) {
-      const _function = commandsObject[functionName];
+    if (isPlainObject(taskParam)) {
+      for (const functionName in taskParam) {
+        const _function = taskParam[functionName];
 
-      // Should be function
-      if (typeof _function !== 'function') continue;
+        // Should be function
+        if (typeof _function !== 'function') continue;
 
-      // Will pushed in tasks
+        // Will pushed in tasks
+        const taskObject = {
+          name: functionName,
+          handler: _function
+        };
+
+        this._tasks.push(taskObject);
+      }
+    } else if (Array.isArray(taskParam)) {
+      var i = 0,
+        len = taskParam.length;
+
+      for (; i < len; i++) {
+        const fn = taskParam[i];
+
+        if (typeof fn !== 'function') continue;
+
+        if (!fn.name) {
+          throw new Error('\nTask function must has name\n');
+        }
+
+        const taskObject = {
+          name: fn.name,
+          handler: fn
+        };
+
+        this._tasks.push(taskObject);
+      }
+    } else if (typeof taskParam === 'function') {
       const taskObject = {
-        name: functionName,
-        handler: _function
+        name: taskParam.name,
+        handler: taskParam
       };
 
       this._tasks.push(taskObject);
+    } else {
+      throw new TypeError(
+        '\nTask param must be plain object of function or array of funtion or function\n'
+      );
     }
 
     // Options for command line
@@ -190,7 +220,7 @@ class Terminal {
 
 // Use Any Argument without define it
 Terminal.useAnyArg = Terminal.prototype.useAnyArg = function (task) {
-  return new AnyArg(task);
+  return new AnyArg(task).task;
 };
 
 /**
