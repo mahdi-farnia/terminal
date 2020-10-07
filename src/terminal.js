@@ -197,7 +197,7 @@ class Terminal {
                   return arg;
                 }
                 throw {
-                  message: `Argument ${arg} was not specified`,
+                  message: `Argument ${arg} not found`,
                   type: Errors.argument
                 };
               }
