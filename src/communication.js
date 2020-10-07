@@ -1,5 +1,4 @@
 const TaskEvent = require('./taskEvent');
-const { EventEmitter } = require('events');
 
 // Communication between task
 class Communication {
@@ -37,7 +36,7 @@ class Communication {
   /**
    * Listener For Tasks Status
    * @param { 'start' | 'end' | 'error' } [event]
-   * @param { (eventData: { which: string, result: any, success?: boolean, arguments: { name: string, value: any }[], message?: string } ) => void } [listener]
+   * @param { (eventData: { which: string, result: any, success?: boolean, arguments: { name: string, value: any }[], error?: { type: 'run' | 'argument', message: string } } ) => void } [listener]
    */
   on(event, listener) {
     if (event) {

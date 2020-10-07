@@ -3,7 +3,7 @@ const { isPlainObject } = require('is-plain-object');
 class TaskEvent {
   /**
    * @param {string} which event name
-   * @param {{ name: string, result?: any, success?: boolean, arguments: { name: string, value: any }[], message?: string }} taskInfo
+   * @param {{ name: string, result?: any, success?: boolean, arguments: { name: string, value: any }[], error?: { type: "argument" | "run", message: string } }} taskInfo
    */
   constructor(which, taskInfo) {
     which += '';
@@ -26,7 +26,7 @@ class TaskEvent {
 
     this.arguments = taskInfo.arguments;
 
-    this.message = taskInfo.message;
+    this.error = taskInfo.error;
   }
 
   // Keys and values should be same

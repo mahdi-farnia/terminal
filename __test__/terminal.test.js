@@ -6,25 +6,18 @@ const _interface = rl.createInterface({
   output: process.stdout
 });
 
-const tasks = Terminal.useAnyArg({
-  say(...msg) {
-    console.log.apply(void 0, msg);
-  },
-  name(name) {
-    console.log('my name is ' + name);
-  }
-});
+const tasks = {
+  exit: process.exit
+};
 
 const terminal = new Terminal(tasks);
 
 const task = Terminal.createCommunication(terminal);
 
-task.on('end', ({ success, which }) => {
-  console.log(
-    `\n Task: ${which} was ${success ? 'successful' : 'not successful'}\n`
-  );
+task.on('end', ({ success, which, error }) => {
+  console.log(`\n ${error.type} \n ${error.message} \n`);
 });
 
-_interface.question('Enter Command:\n', (an) => {
+_interface.question('\n$:', (an) => {
   terminal.exec(an);
 });

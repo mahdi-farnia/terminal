@@ -6,6 +6,11 @@ const defaults = {
   multipleCommandSplitter: ' && '
 };
 
+const Errors = {
+  run: 'run',
+  argument: 'argument'
+};
+
 const whiteSpaces = /\s+/g;
 
 class Terminal {
@@ -191,7 +196,10 @@ class Terminal {
                 if (AnyArg.isThis(taskObject.handler)) {
                   return arg;
                 }
-                throw new Error(`Argument ${arg} was not specified`);
+                throw {
+                  message: `Argument ${arg} was not specified`,
+                  type: Errors.argument
+                };
               }
 
               return reservedArgs[arg];
@@ -205,7 +213,10 @@ class Terminal {
 
         onEnd(info);
       } catch (err) {
-        info.message = err;
+        info.error =
+          err.type !== Errors.argument
+            ? { type: Errors.run, message: `${info.name || 'Task'} Run Failed` }
+            : err;
         info.success = false;
         onError(info);
         onEnd(info);
